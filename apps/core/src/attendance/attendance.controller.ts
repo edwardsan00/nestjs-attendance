@@ -6,24 +6,26 @@
   Param,
   ParseIntPipe,
 } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
+import { CreateAttendanceDto } from '@shared/contracts/dtos/attendance';
+import { ATTENDANCE_EVENTS } from '@shared/contracts/events/attendance';
 import { AttendanceService } from './attendance.service.js';
-import { CreateAttendanceDto } from './dto/create-attendance.dto.js';
 
-@Controller('attendance')
+@Controller()
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
 
-  @Post('entrada')
+  @MessagePattern(ATTENDANCE_EVENTS.CHECK_IN)
   marcarEntrada(@Body() createAttendanceDto: CreateAttendanceDto) {
     return this.attendanceService.marcarEntrada(createAttendanceDto);
   }
 
-  @Post('salida')
+  @MessagePattern(ATTENDANCE_EVENTS.CHECK_OUT)
   marcarSalida(@Body() createAttendanceDto: CreateAttendanceDto) {
     return this.attendanceService.marcarSalida(createAttendanceDto);
   }
 
-  @Get('employee/:id')
+  @MessagePattern(ATTENDANCE_EVENTS.ATTENDANCE_LIST)
   obtenerAsistencias(@Param('id', ParseIntPipe) employeeId: number) {
     return this.attendanceService.obtenerAsistencias(employeeId);
   }

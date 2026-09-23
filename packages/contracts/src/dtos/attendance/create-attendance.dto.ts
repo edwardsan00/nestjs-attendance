@@ -6,7 +6,11 @@
   IsLatitude,
   IsLongitude,
 } from 'class-validator';
-import { AttendanceType } from '../entities/attendance.entity.js';
+
+export enum AttendanceType {
+  ENTRADA = 'entrada',
+  SALIDA = 'salida',
+}
 
 export class CreateAttendanceDto {
   @IsNotEmpty()
