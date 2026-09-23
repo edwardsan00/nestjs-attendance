@@ -2,11 +2,11 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AttendanceController } from './attendance.controller.js';
 import { AttendanceService } from './attendance.service.js';
-import { Attendance } from './entities/attendance.entity.js';
-import { EmployeesModule } from '../employees/employees.module';
+import { Attendance as AttendanceEntity } from './entities/attendance.entity.js';
+import { EmployeesModule } from 'src/employees/employees.module.ts';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Attendance]), EmployeesModule],
+  imports: [TypeOrmModule.forFeature([AttendanceEntity]), EmployeesModule],
   controllers: [AttendanceController],
   providers: [AttendanceService],
 })

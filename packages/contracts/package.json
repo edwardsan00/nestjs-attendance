@@ -2,9 +2,18 @@
   "name": "@shared/contracts",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module"
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./dtos/attendance": "./src/dtos/attendance/index.ts",
+    "./events/attendance": "./src/events/attendance.ts"
+  },
+  "dependencies": {
+    "class-validator": "^0.15.1"
+  }
 }

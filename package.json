@@ -11,9 +11,9 @@
     "dev:ux": "pnpm --filter @app/ux run start:dev"
   },
   "devDependencies": {
-    "typescript": "^6.0.2",
     "oxlint": "^1.58.0",
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "typescript": "^6.0.2"
   },
   "packageManager": "pnpm@12.4.2"
 }

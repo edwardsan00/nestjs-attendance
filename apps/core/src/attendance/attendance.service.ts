@@ -1,30 +1,45 @@
 ﻿import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Attendance, AttendanceType } from './entities/attendance.entity.js';
-import { Employee } from 'src/employees/entities/employee.entity.ts';
-import { CreateAttendanceDto } from './dto/create-attendance.dto.js';
+import {
+  CreateAttendanceDto,
+  AttendanceType,
+} from '@shared/contracts/dtos/attendance';
+import { Attendance } from './entities/attendance.entity.js';
+import { EmployeesService } from 'src/employees/employees.service.ts';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class AttendanceService {
   constructor(
     @InjectRepository(Attendance)
     private attendanceRepository: Repository<Attendance>,
-    @InjectRepository(Employee)
-    private employeeRepository: Repository<Employee>,
+    private employeeService: EmployeesService,
   ) {}
+
+  private async validarEntradaSinSalida(
+    employeeId: number,
+  ): Promise<Attendance | null> {
+    const lastAttendance = await this.attendanceRepository.findOne({
+      where: { employeeId },
+      order: { horaRegistro: 'DESC' },
+    });
+
+    if (lastAttendance && lastAttendance.tipo === AttendanceType.ENTRADA)
+      throw new RpcException({
+        statusCode: 400,
+        message: 'El empleado ya tiene una entrada registrada sin salida',
+        error: 'Bad Request',
+      });
+
+    return lastAttendance;
+  }
 
   async marcarEntrada(createAttendanceDto: CreateAttendanceDto) {
     // Validar que el empleado existe
-    const employee = await this.employeeRepository.findOne({
-      where: { id: createAttendanceDto.employeeId },
-    });
+    await this.employeeService.findById(createAttendanceDto.employeeId);
 
-    if (!employee) {
-      throw new NotFoundException(
-        `Empleado con ID ${createAttendanceDto.employeeId} no encontrado`,
-      );
-    }
+    await this.validarEntradaSinSalida(createAttendanceDto.employeeId);
 
     const attendance = this.attendanceRepository.create({
       ...createAttendanceDto,
@@ -37,15 +52,7 @@ export class AttendanceService {
 
   async marcarSalida(createAttendanceDto: CreateAttendanceDto) {
     // Validar que el empleado existe
-    const employee = await this.employeeRepository.findOne({
-      where: { id: createAttendanceDto.employeeId },
-    });
-
-    if (!employee) {
-      throw new NotFoundException(
-        `Empleado con ID ${createAttendanceDto.employeeId} no encontrado`,
-      );
-    }
+    await this.employeeService.findById(createAttendanceDto.employeeId);
 
     const horaRegistro = new Date(createAttendanceDto.horaRegistro);
 
@@ -59,15 +66,7 @@ export class AttendanceService {
   }
 
   async obtenerAsistencias(employeeId: number) {
-    const employee = await this.employeeRepository.findOne({
-      where: { id: employeeId },
-    });
-
-    if (!employee) {
-      throw new NotFoundException(
-        `Empleado con ID ${employeeId} no encontrado`,
-      );
-    }
+    await this.employeeService.findById(employeeId);
 
     return this.attendanceRepository.find({
       where: { employeeId },
