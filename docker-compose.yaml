@@ -1,0 +1,88 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: 'Y'
+      MSSQL_SA_PASSWORD: '${DB_PASSWORD}'
+      MSSQL_PID: 'Developer'
+    ports:
+      - '${DB_PORT}:1433'
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - dev-network
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -Q ''SELECT 1'' || exit 1',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./database/init.sql:/init.sql:ro
+    entrypoint: >
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "${DB_PASSWORD}" -d master -i /init.sql
+    networks:
+      - dev-network
+
+  aapcore:
+    build:
+      context: .
+      dockerfile: ./apps/core/Dockerfile
+    container_name: aapcore
+    environment:
+      PORT: ${CORE_TCP_PORT}
+      HOST: 0.0.0.0
+      DB_TYPE: mssql
+      DB_HOST: sqlserver
+      DB_PORT: 1433
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: '${DB_PASSWORD}'
+      DB_DATABASE: '${DB_DATABASE}'
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/core/node_modules
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+    networks:
+      - dev-network
+
+  appux:
+    build:
+      context: .
+      dockerfile: ./apps/ux/Dockerfile
+    container_name: appux
+    environment:
+      PORT: 3000
+      ATTENDANCE_SERVICE_HOST: aapcore
+      ATTENDANCE_SERVICE_PORT: ${CORE_TCP_PORT}
+    ports:
+      - '${UX_PORT}:3000'
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/ux/node_modules
+    depends_on:
+      - aapcore
+    networks:
+      - dev-network
+
+volumes:
+  sqlserver_data:
+
+networks:
+  dev-network:
+    driver: bridge

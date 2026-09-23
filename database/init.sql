@@ -18,12 +18,20 @@ BEGIN
 END
 GO
 
-    INSERT INTO employees (nombre, apellido, numeroDocumento) VALUES 
-    ('Juan', 'Pérez', '12345678'),
-    ('María', 'García', '87654321'),
-    ('Carlos', 'López', '11223344'),
-    ('Ana', 'Martínez', '55667788'),
-    ('Luis', 'Rodríguez', '99887766');
+    INSERT INTO employees (nombre, apellido, numeroDocumento)
+    SELECT nombre, apellido, numeroDocumento
+    FROM (VALUES
+        ('Juan', 'Pérez', '12345678'),
+        ('María', 'García', '87654321'),
+        ('Carlos', 'López', '11223344'),
+        ('Ana', 'Martínez', '55667788'),
+        ('Luis', 'Rodríguez', '99887766')
+    ) AS seed(nombre, apellido, numeroDocumento)
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM employees
+        WHERE employees.numeroDocumento = seed.numeroDocumento
+    );
 
 GO
 
