@@ -8,6 +8,7 @@ import {
 import { Attendance } from './entities/attendance.entity.js';
 import { EmployeesService } from 'src/employees/employees.service.ts';
 import { RpcException } from '@nestjs/microservices';
+import { differenceInHours } from 'date-fns';
 
 @Injectable()
 export class AttendanceService {
@@ -17,13 +18,22 @@ export class AttendanceService {
     private employeeService: EmployeesService,
   ) {}
 
-  private async validarEntradaSinSalida(
+  private async obtenerUltimoRegistro(
     employeeId: number,
   ): Promise<Attendance | null> {
-    const lastAttendance = await this.attendanceRepository.findOne({
+    return await this.attendanceRepository.findOne({
       where: { employeeId },
       order: { horaRegistro: 'DESC' },
     });
+  }
+
+  async marcarEntrada(createAttendanceDto: CreateAttendanceDto) {
+    // Validar que el empleado existe
+    await this.employeeService.findById(createAttendanceDto.employeeId);
+
+    const lastAttendance = await this.obtenerUltimoRegistro(
+      createAttendanceDto.employeeId,
+    );
 
     if (lastAttendance && lastAttendance.tipo === AttendanceType.ENTRADA)
       throw new RpcException({
@@ -31,15 +41,6 @@ export class AttendanceService {
         message: 'El empleado ya tiene una entrada registrada sin salida',
         error: 'Bad Request',
       });
-
-    return lastAttendance;
-  }
-
-  async marcarEntrada(createAttendanceDto: CreateAttendanceDto) {
-    // Validar que el empleado existe
-    await this.employeeService.findById(createAttendanceDto.employeeId);
-
-    await this.validarEntradaSinSalida(createAttendanceDto.employeeId);
 
     const attendance = this.attendanceRepository.create({
       ...createAttendanceDto,
@@ -54,12 +55,35 @@ export class AttendanceService {
     // Validar que el empleado existe
     await this.employeeService.findById(createAttendanceDto.employeeId);
 
-    const horaRegistro = new Date(createAttendanceDto.horaRegistro);
+    const lastAttendance = await this.obtenerUltimoRegistro(
+      createAttendanceDto.employeeId,
+    );
+
+    if (
+      !lastAttendance ||
+      (lastAttendance && lastAttendance.tipo === AttendanceType.SALIDA)
+    )
+      throw new RpcException({
+        statusCode: 400,
+        message: 'No hay una entrada registrada para marcar salida',
+        error: 'Bad Request',
+      });
+
+    const getCheckInDate = new Date(lastAttendance.horaRegistro);
+    const getCheckOutDate = new Date(createAttendanceDto.horaRegistro);
+
+    if (differenceInHours(getCheckOutDate, getCheckInDate) < 0) {
+      throw new RpcException({
+        statusCode: 400,
+        message: 'La hora de salida debe ser posterior a la hora de entrada',
+        error: 'Bad Request',
+      });
+    }
 
     const attendance = this.attendanceRepository.create({
       ...createAttendanceDto,
       tipo: AttendanceType.SALIDA,
-      horaRegistro,
+      horaRegistro: getCheckOutDate,
     });
 
     return this.attendanceRepository.save(attendance);
