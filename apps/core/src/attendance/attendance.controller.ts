@@ -1,11 +1,4 @@
-﻿import {
-  Controller,
-  Post,
-  Get,
-  Body,
-  Param,
-  ParseIntPipe,
-} from '@nestjs/common';
+﻿import { Controller, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { CreateAttendanceDto } from '@shared/contracts/dtos/attendance';
 import { ATTENDANCE_EVENTS } from '@shared/contracts/events/attendance';
