@@ -28,7 +28,6 @@ export class AttendanceService {
   }
 
   async marcarEntrada(createAttendanceDto: CreateAttendanceDto) {
-    // Validar que el empleado existe
     await this.employeeService.findById(createAttendanceDto.employeeId);
 
     const lastAttendance = await this.obtenerUltimoRegistro(
@@ -52,7 +51,6 @@ export class AttendanceService {
   }
 
   async marcarSalida(createAttendanceDto: CreateAttendanceDto) {
-    // Validar que el empleado existe
     await this.employeeService.findById(createAttendanceDto.employeeId);
 
     const lastAttendance = await this.obtenerUltimoRegistro(

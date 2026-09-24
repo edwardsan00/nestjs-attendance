@@ -7,15 +7,21 @@
     "isolatedModules": true,
     "declaration": true,
     "removeComments": true,
+    "noEmit": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,
+    "paths": {
+      "src/*": ["./src/*"]
+    },
     "strictPropertyInitialization": false,
     "types": ["vitest/globals", "node"]
   }
