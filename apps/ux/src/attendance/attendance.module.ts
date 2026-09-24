@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AttendanceController } from './attendance.controller.ts';
-import { AttendanceService } from './attendance.service.ts';
+import { AttendanceController } from './attendance.controller.js';
+import { AttendanceService } from './attendance.service.js';
 
 @Module({
   imports: [],

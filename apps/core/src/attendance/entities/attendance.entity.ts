@@ -6,7 +6,7 @@
   JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { Employee } from '../../employees/entities/employee.entity.js';
+import type { Employee } from '../../employees/entities/employee.entity.js';
 import { AttendanceType } from '@shared/contracts/dtos/attendance';
 
 @Entity('attendances')
@@ -17,7 +17,7 @@ export class Attendance {
   @Column()
   employeeId: number;
 
-  @ManyToOne(() => Employee, (employee) => employee.attendances, {
+  @ManyToOne('Employee', (employee: Employee) => employee.attendances, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'employeeId' })

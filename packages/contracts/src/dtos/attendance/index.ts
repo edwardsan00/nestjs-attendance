@@ -1,1 +1,1 @@
-export * from './create-attendance.dto.ts';
+export * from './create-attendance.dto.js';

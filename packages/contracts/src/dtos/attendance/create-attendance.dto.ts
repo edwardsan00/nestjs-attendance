@@ -7,10 +7,13 @@
   IsLongitude,
 } from 'class-validator';
 
-export enum AttendanceType {
-  ENTRADA = 'entrada',
-  SALIDA = 'salida',
-}
+export const AttendanceType = {
+  ENTRADA: 'entrada',
+  SALIDA: 'salida',
+} as const;
+
+export type AttendanceType =
+  (typeof AttendanceType)[keyof typeof AttendanceType];
 
 export class CreateAttendanceDto {
   @IsNotEmpty()

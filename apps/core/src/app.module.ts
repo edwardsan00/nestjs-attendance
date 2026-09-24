@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EmployeesModule } from './employees/employees.module.ts';
-import { AttendanceModule } from './attendance/attendance.module.ts';
+import { EmployeesModule } from './employees/employees.module.js';
+import { AttendanceModule } from './attendance/attendance.module.js';
+import { Employee } from './employees/entities/employee.entity.js';
+import { Attendance } from './attendance/entities/attendance.entity.js';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { AttendanceModule } from './attendance/attendance.module.ts';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [__dirname + '/src/**/*.entity{.ts}'],
+      entities: [Employee, Attendance],
       synchronize: false,
       options: {
         encrypt: false, // Cambiar a true si usas Azure SQL

@@ -1,2 +1,2 @@
-export * from './dtos/attendance/index.ts';
-export * from './events/attendance.ts';
+export * from './dtos/attendance/index.js';
+export * from './events/attendance.js';

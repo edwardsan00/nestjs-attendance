@@ -5,7 +5,7 @@ import {
   Transport,
   RpcException,
 } from '@nestjs/microservices';
-import { AppModule } from './app.module.ts';
+import { AppModule } from './app.module.js';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
