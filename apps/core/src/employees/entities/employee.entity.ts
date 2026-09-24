@@ -1,5 +1,5 @@
 ﻿import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Attendance } from 'src/attendance/entities/attendance.entity.ts';
+import type { Attendance } from 'src/attendance/entities/attendance.entity.js';
 
 @Entity('employees')
 export class Employee {
@@ -15,6 +15,6 @@ export class Employee {
   @Column({ type: 'varchar', length: 20, unique: true })
   numeroDocumento: string;
 
-  @OneToMany(() => Attendance, (attendance) => attendance.employee)
+  @OneToMany('Attendance', (attendance: Attendance) => attendance.employee)
   attendances: Attendance[];
 }

@@ -1,12 +1,142 @@
-import { Controller, Post } from '@nestjs/common';
-import { AttendanceService } from './attendance.service.ts';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiNotFoundResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
+import { AttendanceService } from './attendance.service.js';
+import { CreateAttendanceResponseDto } from './dto/attendance.response.js';
+import { CreateAttendanceRequestDto } from './dto/attendance.request.js';
 
-@Controller()
+@ApiTags('Asistencias')
+@Controller('asistencias')
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
 
   @Post('entrada')
-  getHello() {
+  @ApiOperation({ summary: 'Registrar entrada de asistencia' })
+  @ApiResponse({
+    status: 201,
+    description: 'Entrada de asistencia registrada exitosamente',
+    type: CreateAttendanceResponseDto,
+  })
+  @ApiBadRequestResponse({
+    schema: {
+      oneOf: [
+        {
+          example: {
+            statusCode: 400,
+            message: 'El empleado ya tiene una entrada registrada sin salida',
+            error: 'Bad Request',
+          },
+          description: 'El empleado ya tiene una entrada registrada sin salida',
+        },
+        {
+          example: {
+            statusCode: 400,
+            message: [
+              'employeeId must be a number conforming to the specified constraints',
+              'latitud must be a latitude string or number',
+              'longitud must be a longitude string or number',
+            ],
+            error: 'Bad Request',
+          },
+          description: 'Datos de entrada invalidos',
+        },
+      ],
+    },
+  })
+  @ApiNotFoundResponse({
+    example: {
+      statusCode: 404,
+      message: 'Empleado con ID 999 no encontrado',
+      error: 'Not Found',
+    },
+  })
+  async entrada(
+    @Body() createAttendanceDto: CreateAttendanceRequestDto,
+  ): Promise<any> {
+    console.log(
+      '🚀 ~ AttendanceController ~ entrada ~ createAttendanceDto:',
+      createAttendanceDto,
+    );
+    return this.attendanceService.getHello();
+  }
+
+  @Post('salida')
+  @ApiOperation({ summary: 'Registrar salida de asistencia' })
+  @ApiResponse({
+    status: 201,
+    description: 'Salida de asistencia registrada exitosamente',
+    type: CreateAttendanceResponseDto,
+  })
+  @ApiNotFoundResponse({
+    example: {
+      statusCode: 404,
+      message: 'Empleado con ID 999 no encontrado',
+      error: 'Not Found',
+    },
+  })
+  @ApiBadRequestResponse({
+    schema: {
+      oneOf: [
+        {
+          example: {
+            statusCode: 400,
+            message: 'No hay una entrada registrada para marcar salida',
+            error: 'Bad Request',
+          },
+          description: 'Marcar doble salida',
+        },
+        {
+          example: {
+            statusCode: 400,
+            message:
+              'La hora de salida debe ser posterior a la hora de entrada',
+            error: 'Bad Request',
+          },
+          description: 'Error con la hora de salida',
+        },
+      ],
+    },
+  })
+  async salida(
+    @Body() createAttendanceDto: CreateAttendanceRequestDto,
+  ): Promise<any> {
+    console.log(
+      '🚀 ~ AttendanceController ~ salida ~ createAttendanceDto:',
+      createAttendanceDto,
+    );
+    return this.attendanceService.getHello();
+  }
+
+  @Get('employee/:id')
+  @ApiNotFoundResponse({
+    example: {
+      statusCode: 404,
+      message: 'Empleado con ID 999 no encontrado',
+      error: 'Not Found',
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Salida de asistencia registrada exitosamente',
+    type: [CreateAttendanceResponseDto],
+  })
+  async reportePorEmpleado(@Param('id') id: string) {
+    console.log(
+      '🚀 ~ AttendanceController ~ reportePorEmpleado ~ employeeId:',
+      id,
+    );
     return this.attendanceService.getHello();
   }
 }

@@ -2,16 +2,19 @@
   "name": "@shared/contracts",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./dtos/attendance": "./src/dtos/attendance/index.ts",
-    "./events/attendance": "./src/events/attendance.ts"
+    ".": "./dist/index.js",
+    "./dtos/attendance": "./dist/dtos/attendance/index.js",
+    "./events/attendance": "./dist/events/attendance.js"
   },
   "dependencies": {
     "class-validator": "^0.15.1"

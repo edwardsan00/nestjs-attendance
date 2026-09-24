@@ -9,9 +9,10 @@ COPY packages/ packages/
 COPY apps/core/package.json apps/core/
 
 RUN pnpm install
+RUN pnpm --filter @shared/contracts build
 
 COPY . .
 
 WORKDIR /usr/src/app/apps/core
 
-CMD ["pnpm", "run", "start:dev"]
+CMD ["sh", "-c", "pnpm --filter @shared/contracts build && pnpm run start:dev"]

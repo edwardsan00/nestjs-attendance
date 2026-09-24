@@ -6,7 +6,7 @@ import {
   AttendanceType,
 } from '@shared/contracts/dtos/attendance';
 import { Attendance } from './entities/attendance.entity.js';
-import { EmployeesService } from 'src/employees/employees.service.ts';
+import { EmployeesService } from 'src/employees/employees.service.js';
 import { RpcException } from '@nestjs/microservices';
 import { differenceInHours } from 'date-fns';
 
