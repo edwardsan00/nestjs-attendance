@@ -202,6 +202,9 @@ importers:
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
+      class-validator:
+        specifier: ^0.15.1
+        version: 0.15.1
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0

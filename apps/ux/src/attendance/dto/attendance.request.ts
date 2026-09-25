@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
@@ -8,12 +7,15 @@ import {
   IsNotEmpty,
   IsNumber,
 } from 'class-validator';
-import {
-  type CreateAttendanceDto,
-  AttendanceType,
-} from '@shared/contracts/dtos/attendance';
 
-export class CreateAttendanceRequestDto implements CreateAttendanceDto {
+const AttendanceType = {
+  ENTRADA: 'entrada',
+  SALIDA: 'salida',
+} as const;
+
+type AttendanceType = (typeof AttendanceType)[keyof typeof AttendanceType];
+
+export class CreateAttendanceRequestDto {
   @ApiProperty({
     description: 'ID del empleado',
     example: 1,

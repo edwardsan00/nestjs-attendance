@@ -13,7 +13,6 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./dtos/attendance": "./dist/dtos/attendance/index.js",
     "./events/attendance": "./dist/events/attendance.js"
   },
   "dependencies": {

@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import {
   CreateAttendanceDto,
   AttendanceType,
-} from '@shared/contracts/dtos/attendance';
+} from './dto/create-attendance.dto.js';
+import { AttendanceList } from './dto/attendance-list.js';
 import { Attendance } from './entities/attendance.entity.js';
 import { EmployeesService } from 'src/employees/employees.service.js';
 import { RpcException } from '@nestjs/microservices';
@@ -99,12 +100,12 @@ export class AttendanceService {
     return this.attendanceRepository.save(attendance);
   }
 
-  async obtenerAsistencias(employeeId: number) {
+  async obtenerAsistencias({ employeeId }: AttendanceList) {
     await this.employeeService.findById(employeeId);
 
     return this.attendanceRepository.find({
       where: { employeeId },
-      order: { horaRegistro: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 }
