@@ -26,6 +26,19 @@ export class AttendanceService {
     return data;
   }
 
+  async marcarSalida(
+    payload: CreateAttendanceRequestDto,
+  ): Promise<CreateAttendanceResponseDto> {
+    const data = await firstValueFrom(
+      this.attendanceClient.send<CreateAttendanceResponseDto>(
+        ATTENDANCE_EVENTS.CHECK_OUT,
+        payload,
+      ),
+    );
+
+    return data;
+  }
+
   getHello() {
     return {
       message: 'Hello World!',

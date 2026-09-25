@@ -23,16 +23,26 @@ export class AttendanceService {
   ): Promise<Attendance | null> {
     return await this.attendanceRepository.findOne({
       where: { employeeId },
-      order: { horaRegistro: 'DESC' },
+      order: { createdAt: 'DESC', id: 'DESC' },
+      loadEagerRelations: false,
     });
   }
 
-  async marcarEntrada(createAttendanceDto: CreateAttendanceDto) {
+  async marcarEntrada(
+    createAttendanceDto: CreateAttendanceDto,
+  ): Promise<Attendance> {
     await this.employeeService.findById(createAttendanceDto.employeeId);
 
     const lastAttendance = await this.obtenerUltimoRegistro(
       createAttendanceDto.employeeId,
     );
+
+    if (createAttendanceDto.tipo === AttendanceType.SALIDA)
+      throw new RpcException({
+        statusCode: 400,
+        message: 'Error en valor de tipo para el servicio de entrada',
+        error: 'Bad Request',
+      });
 
     if (lastAttendance && lastAttendance.tipo === AttendanceType.ENTRADA)
       throw new RpcException({
@@ -50,7 +60,9 @@ export class AttendanceService {
     return this.attendanceRepository.save(attendance);
   }
 
-  async marcarSalida(createAttendanceDto: CreateAttendanceDto) {
+  async marcarSalida(
+    createAttendanceDto: CreateAttendanceDto,
+  ): Promise<Attendance> {
     await this.employeeService.findById(createAttendanceDto.employeeId);
 
     const lastAttendance = await this.obtenerUltimoRegistro(

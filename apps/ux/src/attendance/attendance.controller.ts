@@ -107,12 +107,8 @@ export class AttendanceController {
   })
   async salida(
     @Body() createAttendanceDto: CreateAttendanceRequestDto,
-  ): Promise<any> {
-    console.log(
-      '🚀 ~ AttendanceController ~ salida ~ createAttendanceDto:',
-      createAttendanceDto,
-    );
-    return this.attendanceService.getHello();
+  ): Promise<CreateAttendanceResponseDto> {
+    return this.attendanceService.marcarSalida(createAttendanceDto);
   }
 
   @Get('employee/:id')
