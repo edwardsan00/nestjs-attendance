@@ -1,6 +1,7 @@
-﻿import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { differenceInHours } from 'date-fns';
 import {
   CreateAttendanceDto,
   AttendanceType,
@@ -9,14 +10,16 @@ import { AttendanceList } from './dto/attendance-list.js';
 import { Attendance } from './entities/attendance.entity.js';
 import { EmployeesService } from 'src/employees/employees.service.js';
 import { RpcException } from '@nestjs/microservices';
-import { differenceInHours } from 'date-fns';
+import { LateArrivalCheckService } from './service/late-arrival-check.service.js';
 
 @Injectable()
 export class AttendanceService {
+  private logger = new Logger(AttendanceService.name);
   constructor(
     @InjectRepository(Attendance)
     private attendanceRepository: Repository<Attendance>,
     private employeeService: EmployeesService,
+    private lateCheck: LateArrivalCheckService,
   ) {}
 
   private async obtenerUltimoRegistro(
@@ -51,6 +54,15 @@ export class AttendanceService {
         message: 'El empleado ya tiene una entrada registrada sin salida',
         error: 'Bad Request',
       });
+
+    const { isLate } = this.lateCheck.check(
+      new Date(createAttendanceDto.horaRegistro),
+    );
+
+    if (isLate)
+      this.logger.log(
+        `Envio de notificacion a empleado ${createAttendanceDto.employeeId} por llegar tarde`,
+      );
 
     const attendance = this.attendanceRepository.create({
       ...createAttendanceDto,
