@@ -20,7 +20,7 @@ export class Attendance {
   @ManyToOne('Employee', (employee: Employee) => employee.attendances, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'employeeId' })
+  @JoinColumn({ name: 'employeeId', referencedColumnName: 'id' })
   employee: Employee;
 
   @Column({

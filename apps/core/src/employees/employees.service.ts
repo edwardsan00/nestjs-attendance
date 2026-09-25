@@ -14,6 +14,7 @@ export class EmployeesService {
   async findById(id: number): Promise<Employee | null> {
     const employee = await this.employeeRepository.findOne({
       where: { id },
+      loadEagerRelations: false,
     });
 
     if (!employee)
