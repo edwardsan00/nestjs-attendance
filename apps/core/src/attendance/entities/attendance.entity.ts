@@ -7,7 +7,7 @@
   CreateDateColumn,
 } from 'typeorm';
 import type { Employee } from '../../employees/entities/employee.entity.js';
-import { AttendanceType } from '@shared/contracts/dtos/attendance';
+import { AttendanceType } from '../dto/create-attendance.dto.js';
 
 @Entity('attendances')
 export class Attendance {

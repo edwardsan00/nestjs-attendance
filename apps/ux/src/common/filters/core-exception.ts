@@ -7,24 +7,21 @@ import {
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 
-type CoreException = {
-  statusCode: number;
-  message: string;
-  error: string;
-};
-
 @Catch()
 export class CoreExceptionFilter implements ExceptionFilter {
-  catch(exception: CoreException, host: ArgumentsHost) {
+  catch(exception: any, host: ArgumentsHost) {
+    console.log('🚀 ~ CoreExceptionFilter ~ catch ~ exception:', exception);
     const logger = new Logger('Exceptions');
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const statusCode =
-      exception?.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
+    const errorData = exception?.response || exception;
 
-    const message = exception?.message || 'Error interno del servidor';
+    const statusCode =
+      errorData?.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
+
+    const message = errorData?.message || 'Error interno del servidor';
 
     const error =
       exception?.error ||

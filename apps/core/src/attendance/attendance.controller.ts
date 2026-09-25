@@ -1,6 +1,7 @@
 ﻿import { Controller, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { CreateAttendanceDto } from '@shared/contracts/dtos/attendance';
+import { CreateAttendanceDto } from './dto/create-attendance.dto.js';
+import { AttendanceList } from './dto/attendance-list.js';
 import { ATTENDANCE_EVENTS } from '@shared/contracts/events/attendance';
 import { AttendanceService } from './attendance.service.js';
 
@@ -19,7 +20,7 @@ export class AttendanceController {
   }
 
   @MessagePattern(ATTENDANCE_EVENTS.ATTENDANCE_LIST)
-  obtenerAsistencias(@Param('id', ParseIntPipe) employeeId: number) {
-    return this.attendanceService.obtenerAsistencias(employeeId);
+  obtenerAsistencias(@Body() payload: AttendanceList) {
+    return this.attendanceService.obtenerAsistencias(payload);
   }
 }

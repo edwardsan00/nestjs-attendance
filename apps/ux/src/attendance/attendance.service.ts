@@ -39,10 +39,14 @@ export class AttendanceService {
     return data;
   }
 
-  getHello() {
-    return {
-      message: 'Hello World!',
-      timestamp: new Date().toISOString(),
-    };
+  async obtenerAsistencias(
+    employeeId: number,
+  ): Promise<CreateAttendanceResponseDto[]> {
+    const data = await firstValueFrom(
+      this.attendanceClient.send(ATTENDANCE_EVENTS.ATTENDANCE_LIST, {
+        employeeId,
+      }),
+    );
+    return data;
   }
 }

@@ -124,11 +124,7 @@ export class AttendanceController {
     description: 'Salida de asistencia registrada exitosamente',
     type: [CreateAttendanceResponseDto],
   })
-  async reportePorEmpleado(@Param('id') id: string) {
-    console.log(
-      '🚀 ~ AttendanceController ~ reportePorEmpleado ~ employeeId:',
-      id,
-    );
-    return this.attendanceService.getHello();
+  async obtenerAsistencias(@Param('id') id: string) {
+    return this.attendanceService.obtenerAsistencias(Number(id));
   }
 }
