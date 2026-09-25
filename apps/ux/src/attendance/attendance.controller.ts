@@ -64,12 +64,8 @@ export class AttendanceController {
   })
   async entrada(
     @Body() createAttendanceDto: CreateAttendanceRequestDto,
-  ): Promise<any> {
-    console.log(
-      '🚀 ~ AttendanceController ~ entrada ~ createAttendanceDto:',
-      createAttendanceDto,
-    );
-    return this.attendanceService.getHello();
+  ): Promise<CreateAttendanceResponseDto> {
+    return this.attendanceService.marcarEntrada(createAttendanceDto);
   }
 
   @Post('salida')
